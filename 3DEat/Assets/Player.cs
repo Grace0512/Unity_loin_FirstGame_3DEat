@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [Header("跳躍高度"), Range(1, 5000)]
     public float height;
 
+
     /// <summary>
     /// 是否在地板上
     /// </summary>
@@ -31,11 +32,23 @@ public class Player : MonoBehaviour
     private Animator ani;
     // 角色的碰撞器
     private Rigidbody rig;
+    // 喇叭
+    private AudioSource aud;
+    private GameManager gm;
 
     /// <summary>
     /// 跳躍力道:從0慢慢增加
     /// </summary>
     private float jump;
+
+    [Header("吃西瓜音效")]
+    public AudioClip soundEat;
+
+    [Header("吃番茄音效")]
+    public AudioClip soundNotEat;
+
+   
+
     #endregion
 
     #region 方法
@@ -97,9 +110,23 @@ public class Player : MonoBehaviour
     /// <summary>
     /// 碰到道具:碰到帶有標籤"食物"的物件
     /// </summary>
-    private void HitProp()
+    private void HitProp(GameObject prop)
     {
+        print("碰到的物件標籤為"+prop.name);
+        if(prop.tag == "食物")
+        {
+            aud.Stop();
+            aud.PlayOneShot(soundEat, 2); //喇叭.撥放一次音效(音效片段,音量)
+            Destroy(prop); //刪除物件
+        }
+        else if (prop.tag == "不能吃")
+        {
+            aud.Stop();
+            aud.PlayOneShot(soundNotEat, 2);
+            Destroy(prop);
+        }
 
+        gm.GetProp(prop.tag);
     }
 
     #endregion
@@ -111,6 +138,11 @@ public class Player : MonoBehaviour
         // GetComponent<Rigidbody>(); 取得鋼體元件存放到rig
         rig = GetComponent<Rigidbody>();
         ani = GetComponent<Animator>();
+        aud = GetComponent<AudioSource>();
+
+        //foot僅限於場景上只有一個類別存在時使用
+        // 例如：場景上只有一個GameManger類別時可以使用他來取得
+        gm = FindObjectOfType<GameManager>();
     }
 
     // 固定更新頻率事件: 1秒50禎，使用物理必須在此事件內
@@ -126,6 +158,40 @@ public class Player : MonoBehaviour
     }
     #endregion
 
+    //碰撞事件：當物件碰撞開始時執行一次(沒有勾選Is Trigger)
+    private void OnCollisionEnter(Collision collision)
+    {
+        
+    }
 
+    //碰撞事件：當物件碰撞離開始執行一次(沒有勾選Is Trigger)
+
+    private void OnCollisionExit(Collision collision)
+    {
+        
+    }
+
+    // 碰撞事件：當物件碰撞開始時持續執行(沒有勾選 Is Trigger)
+    private void OnCollisionStay(Collision collision)
+    {
+        
+    }
+
+    // 觸發事件：當物件碰撞開始執行一次(有勾選Is Trigger)
+    private void OnTriggerEnter(Collider other)
+    {
+        HitProp(other.gameObject);
+    }
+
+    //觸發事件：當物件碰撞離開執行一次(有勾選Is Trigger)
+    private void OnTriggerExit(Collider other)
+    {
+        
+    }
+    // 觸發事件：當物件碰撞開始時持續執行(勾選 Is Trigger)　60 FPS
+    private void OnTriggerStay(Collider other)
+    {
+        
+    }
 
 }

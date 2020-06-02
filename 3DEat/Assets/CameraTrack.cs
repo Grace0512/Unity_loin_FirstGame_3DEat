@@ -18,12 +18,12 @@ public class CameraTrack : MonoBehaviour
     /// </summary>
     private void Track()
     {
-        // 攝影機與妹紙小明Y軸距離 4-2=2
-        // 攝影機與妹紙小明的Z軸距離 -2.5-1 =-3.5
+        // 攝影機與妹紙小明Y軸距離 5-2=3
+        // 攝影機與妹紙小明的Z軸距離 -2-1 =-3
 
         Vector3 posTrack = player.position;
-        posTrack.y += 2.0f;
-        posTrack.z += -3.5f;
+        posTrack.y += 3.0f;
+        posTrack.z += -3.0f;
 
         // 取得攝影機座標
         Vector3 posCam = transform.position;

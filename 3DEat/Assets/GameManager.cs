@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -59,26 +60,84 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void CountTime()
     {
+        if (countProp == countTotal) return;
+           
         // 遊戲時間 遞減 一禎的時間
         gameTime -= Time.deltaTime;
 
+        //遊戲時間 = 數學.夾住(遊戲時間,最小值,最大值);
+        gameTime = Mathf.Clamp(gameTime, 0, 100);
         // 更新倒數時間介面ToString("f小數點位數")
         textTime.text = "倒數時間：" + gameTime.ToString("f2");
+
+        Lose();
+    }
+
+    public void GetProp(string prop)
+    {
+        if(prop == "食物")
+        {
+            countProp++;
+            textCount.text = "道具數量：" +countProp+"/" + countTotal;
+            Win();
+        }
+        else if(prop == "不能吃")
+        {
+            gameTime -= 2;
+            textTime.text = "倒數時間：" + gameTime.ToString("f2");
+        }
+    }
+
+    // 雞腿吃光光
+    private void Win()
+    {
+        if(countProp == countTotal)
+        {
+            final.alpha = 1;     //顯示結束畫面、啟動互動、啟動遮擋
+            final.interactable = true;
+            final.blocksRaycasts = true;
+            textTitle.text = "恭喜你吃完所有西瓜";
+            FindObjectOfType<Player>().enabled = false;   //取得玩家啟動 = false
+        }
+    }
+    
+    // 時間為0
+    private void Lose()
+    {
+        if(gameTime ==0)
+        {
+            final.alpha = 1;
+            final.interactable = true;
+            final.blocksRaycasts = true;
+            textTitle.text = "挑戰失敗";
+            FindObjectOfType<Player>().enabled = false;   //取得玩家啟動 = false
+        }
+    }
+
+    public void Replay()
+    {
+        SceneManager.LoadScene("遊戲場景");
+    }
+
+    public void Quit()
+    {
+        Application.Quit();
     }
     #endregion
 
     #region 事件
     private void Start()
     {
-        countTotal = CreatProp(porps[0], 20);
+        countTotal = CreatProp(porps[0], 8);
         textCount.text = "道具數量：0/" + countTotal;
-        countTotal = CreatProp(porps[1], 20);
+        CreatProp(porps[1], 8);
 
     }
 
     private void Update()
     {
         CountTime();
+       
     }
 
     #endregion
